@@ -1,18 +1,20 @@
-<p align="center">
+<div align="center">
   <h1 align="center">⚔️ EcoTaleRewards</h1>
   <p align="center">
     <strong>Daily Login Calendar · Streak System · Return Rewards</strong><br>
     MMORPG-style player retention mechanics for Hytale servers
   </p>
-  <p align="center">
+
 ![Hytale Server Mod](https://img.shields.io/badge/Hytale-Server%20Mod-0ea5e9?style=for-the-badge)
-![Version](https://img.shields.io/badge/version-1.2.1-10b981?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.1.0-10b981?style=for-the-badge)
 ![Java](https://img.shields.io/badge/Java-17+-f97316?style=for-the-badge&logo=openjdk&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-a855f7?style=for-the-badge)
 ![Ecotale](https://img.shields.io/badge/Ecotale-1.0.7-6366f1?style=for-the-badge)
-  </p>
-</p>
 
+  <br>
+  
+  </div>
+  
 ---
 
 ## Overview
