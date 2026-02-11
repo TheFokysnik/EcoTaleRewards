@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.crystalrealm'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    stubs {
+        java.srcDirs = ['src/stubs/java']
+    }
+}
+
+dependencies {
+    // Hytale server stubs (compile-only)
+    compileOnly sourceSets.stubs.output
+
+    // JSR-305 annotations (@Nonnull, @Nullable)
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+
+    // Gson for JSON config & storage
+    compileOnly 'com.google.code.gson:gson:2.10.1'
+
+    // Stubs need JSR-305 too
+    stubsCompileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+}
+
+jar {
+    archiveBaseName.set('EcoTaleRewards')
+    archiveVersion.set(version)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

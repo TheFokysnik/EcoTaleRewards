@@ -1,0 +1,501 @@
+﻿$C = "../Common.ui";
+
+@GoldTitle = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 18,
+  TextColor: #ffaa00,
+  RenderBold: true,
+  HorizontalAlignment: Center
+);
+
+@White = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #ffffff
+);
+
+@Gray = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 12,
+  TextColor: #aaaaaa
+);
+
+@SmGray = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 11,
+  TextColor: #aaaaaa
+);
+
+@Value = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #55ff55,
+  RenderBold: true
+);
+
+@Gold = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #ffaa00,
+  RenderBold: true
+);
+
+@Reward = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 12,
+  TextColor: #ffd700,
+  RenderBold: true
+);
+
+@ItemLabel = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 11,
+  TextColor: #55ffff
+);
+
+@Error = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #ff4444,
+  RenderBold: true
+);
+
+@Success = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #55ff55,
+  RenderBold: true
+);
+
+@Streak = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #ff7744,
+  RenderBold: true
+);
+
+@SectionLabel = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 14,
+  TextColor: #ffaa00,
+  RenderBold: true
+);
+
+$C.@PageOverlay {
+  LayoutMode: Middle;
+
+  $C.@DecoratedContainer {
+    Anchor: (Width: 960, Height: 740);
+
+    #Title {
+      Label #TitleLabel { Style: @GoldTitle; Text: "Daily Rewards"; }
+    }
+
+    #Content {
+      LayoutMode: Top;
+      Padding: (Full: 8);
+
+      // в”Ђв”Ђ Banners в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+      Group #ErrorBanner { Anchor: (Height: 22); Visible: false;
+        Label #ErrorText { Style: @Error; Text: ""; }
+      }
+      Group #SuccessBanner { Anchor: (Height: 22); Visible: false;
+        Label #SuccessText { Style: @Success; Text: ""; }
+      }
+      Group #ReturnBanner { Anchor: (Height: 26); Visible: false;
+        LayoutMode: Left;
+        Label #ReturnText { Style: @Gold; FlexWeight: 1; Text: ""; }
+        $C.@SecondaryTextButton #ReturnClaimBtn { Anchor: (Width: 180, Height: 24); Text: "Claim"; }
+      }
+
+      // в”Ђв”Ђ Streak info panel в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+      Group #StreakPanel {
+        LayoutMode: Left;
+        Anchor: (Height: 28);
+        Padding: (Left: 4, Right: 4);
+
+        Label #StreakLabel { Style: @White; Anchor: (Width: 100); Text: ""; }
+        Label #StreakValue { Style: @Streak; Anchor: (Width: 50); Text: ""; }
+        Group { Anchor: (Width: 16); }
+        Label #MultLabel { Style: @White; Anchor: (Width: 110); Text: ""; }
+        Label #MultValue { Style: @Value; Anchor: (Width: 60); Text: ""; }
+        Group { Anchor: (Width: 16); }
+        Label #NextMsLabel { Style: @SmGray; FlexWeight: 1; Text: ""; }
+      }
+
+      Group { Anchor: (Height: 4); }
+      Label #SecCalendar { Style: @SectionLabel; Anchor: (Height: 20); Text: "Calendar"; }
+
+      // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+      //  CALENDAR GRID (30 days, 6 rows x 5 cols)
+      // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+      Group #CalendarContent {
+        FlexWeight: 1;
+        LayoutMode: TopScrolling;
+        ScrollbarStyle: $C.@DefaultScrollbarStyle;
+
+        // в”Ђв”Ђ Row 1 (Day 1-5) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+        Group { LayoutMode: Left; Anchor: (Height: 100); Padding: (Left: 2, Right: 2);
+          Group #Day1 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day1Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day1Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day1ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day1Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day1Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day1Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day1Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day2 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day2Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day2Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day2ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day2Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day2Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day2Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day2Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day3 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day3Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day3Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day3ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day3Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day3Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day3Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day3Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day4 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day4Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day4Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day4ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day4Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day4Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day4Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day4Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day5 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day5Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day5Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day5ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day5Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day5Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day5Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day5Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+        }
+
+        // в”Ђв”Ђ Row 2 (Day 6-10) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+        Group { LayoutMode: Left; Anchor: (Height: 100); Padding: (Left: 2, Right: 2);
+          Group #Day6 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day6Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day6Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day6ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day6Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day6Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day6Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day6Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day7 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day7Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day7Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day7ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day7Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day7Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day7Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day7Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day8 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day8Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day8Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day8ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day8Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day8Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day8Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day8Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day9 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day9Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day9Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day9ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day9Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day9Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day9Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day9Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day10 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day10Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day10Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day10ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day10Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day10Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day10Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day10Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+        }
+
+        // в”Ђв”Ђ Row 3 (Day 11-15) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+        Group { LayoutMode: Left; Anchor: (Height: 100); Padding: (Left: 2, Right: 2);
+          Group #Day11 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day11Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day11Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day11ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day11Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day11Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day11Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day11Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day12 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day12Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day12Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day12ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day12Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day12Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day12Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day12Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day13 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day13Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day13Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day13ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day13Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day13Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day13Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day13Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day14 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day14Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day14Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day14ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day14Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day14Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day14Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day14Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day15 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day15Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day15Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day15ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day15Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day15Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day15Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day15Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+        }
+
+        // в”Ђв”Ђ Row 4 (Day 16-20) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+        Group { LayoutMode: Left; Anchor: (Height: 100); Padding: (Left: 2, Right: 2);
+          Group #Day16 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day16Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day16Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day16ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day16Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day16Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day16Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day16Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day17 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day17Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day17Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day17ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day17Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day17Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day17Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day17Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day18 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day18Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day18Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day18ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day18Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day18Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day18Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day18Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day19 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day19Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day19Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day19ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day19Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day19Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day19Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day19Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day20 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day20Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day20Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day20ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day20Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day20Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day20Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day20Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+        }
+
+        // в”Ђв”Ђ Row 5 (Day 21-25) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+        Group { LayoutMode: Left; Anchor: (Height: 100); Padding: (Left: 2, Right: 2);
+          Group #Day21 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day21Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day21Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day21ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day21Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day21Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day21Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day21Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day22 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day22Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day22Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day22ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day22Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day22Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day22Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day22Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day23 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day23Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day23Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day23ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day23Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day23Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day23Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day23Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day24 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day24Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day24Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day24ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day24Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day24Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day24Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day24Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day25 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day25Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day25Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day25ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day25Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day25Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day25Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day25Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+        }
+
+        // в”Ђв”Ђ Row 6 (Day 26-30) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+        Group { LayoutMode: Left; Anchor: (Height: 100); Padding: (Left: 2, Right: 2);
+          Group #Day26 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day26Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day26Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day26ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day26Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day26Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day26Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day26Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day27 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day27Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day27Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day27ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day27Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day27Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day27Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day27Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day28 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day28Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day28Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day28ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day28Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day28Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day28Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day28Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day29 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day29Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day29Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day29ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day29Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day29Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day29Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day29Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+          Group #Day30 { Visible: false; LayoutMode: Top; FlexWeight: 1; Anchor: (Height: 98); Padding: (Full: 3);
+            Label #Day30Day { Style: @Gray; Anchor: (Height: 14); Text: ""; }
+            Label #Day30Reward { Style: @Reward; Anchor: (Height: 14); Text: ""; }
+            Group #Day30ItemRow { Anchor: (Height: 22); Visible: false; LayoutMode: Left;
+              ItemIcon #Day30Icon { Anchor: (Width: 20, Height: 20); }
+              Group { Anchor: (Width: 2); }
+              Label #Day30Items { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+            }
+            Label #Day30Status { Style: @SmGray; Anchor: (Height: 14); Text: ""; }
+            $C.@SecondaryTextButton #Day30Btn { Anchor: (Height: 22); Text: ""; Visible: false; }
+          }
+        }
+
+        // в”Ђв”Ђ Info area в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+        Group { Anchor: (Height: 6); }
+        Group #ClaimArea {
+          Anchor: (Height: 24);
+          Padding: (Left: 4, Right: 4);
+          Label #ClaimDayLabel { Style: @White; FlexWeight: 1; Text: ""; }
+        }
+      }
+    }
+  }
+}

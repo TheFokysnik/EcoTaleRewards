@@ -1,0 +1,82 @@
+{
+  "General": {
+    "DebugMode": false,
+    "Language": "en",
+    "MessagePrefix": "<dark_gray>[<gold>EcoTale<dark_gray>]",
+    "AutoSaveIntervalMinutes": 5
+  },
+  "Calendar": {
+    "TotalDays": 30,
+    "StrictMode": false,
+    "GraceDays": 2,
+    "ResetOnExpiry": true,
+    "DailyResetTime": "00:00",
+    "Days": {
+      "1":  { "Coins": 50.0,  "XP": 25,  "Items": [], "Commands": [], "Description": "Day 1 — Welcome!" },
+      "2":  { "Coins": 75.0,  "XP": 30,  "Items": [], "Commands": [], "Description": "Day 2" },
+      "3":  { "Coins": 100.0, "XP": 40,  "Items": [], "Commands": [], "Description": "Day 3" },
+      "4":  { "Coins": 100.0, "XP": 40,  "Items": [], "Commands": [], "Description": "Day 4" },
+      "5":  { "Coins": 125.0, "XP": 50,  "Items": [], "Commands": [], "Description": "Day 5" },
+      "6":  { "Coins": 125.0, "XP": 50,  "Items": [], "Commands": [], "Description": "Day 6" },
+      "7":  { "Coins": 250.0, "XP": 100, "Items": ["Weapon_Sword_Crude:1", "Plant_Crop_Wheat_Item:16"], "Commands": ["say {player} completed week 1!"], "Description": "Day 7 — Week 1 Complete!" },
+      "8":  { "Coins": 150.0, "XP": 60,  "Items": [], "Commands": [], "Description": "Day 8" },
+      "9":  { "Coins": 150.0, "XP": 60,  "Items": [], "Commands": [], "Description": "Day 9" },
+      "10": { "Coins": 175.0, "XP": 70,  "Items": [], "Commands": [], "Description": "Day 10" },
+      "11": { "Coins": 175.0, "XP": 70,  "Items": [], "Commands": [], "Description": "Day 11" },
+      "12": { "Coins": 200.0, "XP": 80,  "Items": [], "Commands": [], "Description": "Day 12" },
+      "13": { "Coins": 200.0, "XP": 80,  "Items": [], "Commands": [], "Description": "Day 13" },
+      "14": { "Coins": 500.0, "XP": 200, "Items": ["Ore_Cobalt:3", "Potion_Health:5"], "Commands": ["say {player} completed week 2!"], "Description": "Day 14 — Week 2 Complete!" },
+      "15": { "Coins": 225.0, "XP": 90,  "Items": [], "Commands": [], "Description": "Day 15" },
+      "16": { "Coins": 225.0, "XP": 90,  "Items": [], "Commands": [], "Description": "Day 16" },
+      "17": { "Coins": 250.0, "XP": 100, "Items": [], "Commands": [], "Description": "Day 17" },
+      "18": { "Coins": 250.0, "XP": 100, "Items": [], "Commands": [], "Description": "Day 18" },
+      "19": { "Coins": 275.0, "XP": 110, "Items": [], "Commands": [], "Description": "Day 19" },
+      "20": { "Coins": 275.0, "XP": 110, "Items": [], "Commands": [], "Description": "Day 20" },
+      "21": { "Coins": 750.0, "XP": 300, "Items": ["Weapon_Sword_Iron:1", "Ore_Iron:32"], "Commands": ["say {player} completed week 3!"], "Description": "Day 21 — Week 3 Complete!" },
+      "22": { "Coins": 300.0, "XP": 120, "Items": [], "Commands": [], "Description": "Day 22" },
+      "23": { "Coins": 300.0, "XP": 120, "Items": [], "Commands": [], "Description": "Day 23" },
+      "24": { "Coins": 350.0, "XP": 140, "Items": [], "Commands": [], "Description": "Day 24" },
+      "25": { "Coins": 350.0, "XP": 140, "Items": [], "Commands": [], "Description": "Day 25" },
+      "26": { "Coins": 400.0, "XP": 160, "Items": [], "Commands": [], "Description": "Day 26" },
+      "27": { "Coins": 400.0, "XP": 160, "Items": [], "Commands": [], "Description": "Day 27" },
+      "28": { "Coins": 500.0, "XP": 200, "Items": ["Ore_Mithril:10", "Potion_Stamina:3"], "Commands": ["say {player} completed week 4!"], "Description": "Day 28 — Week 4 Complete!" },
+      "29": { "Coins": 500.0, "XP": 200, "Items": [], "Commands": [], "Description": "Day 29" },
+      "30": { "Coins": 2000.0,"XP": 500, "Items": ["Ore_Onyxium:5", "Weapon_Sword_Adamantite:1", "Potion_Health:5"], "Commands": ["say {player} completed the full 30-day calendar!"], "Description": "Day 30 — Grand Finale!" }
+    }
+  },
+  "Streak": {
+    "Enabled": true,
+    "PartialResetOnBreak": true,
+    "PartialResetDivisor": 2,
+    "Milestones": {
+      "7":  { "BonusCoins": 200.0,  "BonusXP": 100,  "RewardMultiplier": 1.25, "Commands": [], "Description": "7-day streak!" },
+      "14": { "BonusCoins": 500.0,  "BonusXP": 250,  "RewardMultiplier": 1.50, "Commands": [], "Description": "14-day streak!" },
+      "30": { "BonusCoins": 1500.0, "BonusXP": 500,  "RewardMultiplier": 2.00, "Commands": [], "Description": "30-day streak!" },
+      "60": { "BonusCoins": 3000.0, "BonusXP": 1000, "RewardMultiplier": 2.50, "Commands": [], "Description": "60-day streak!" },
+      "90": { "BonusCoins": 5000.0, "BonusXP": 2000, "RewardMultiplier": 3.00, "Commands": [], "Description": "90-day streak!" }
+    },
+    "BaseStreakMultiplier": 1.0,
+    "MultiplierPerDay": 0.02,
+    "MaxMultiplier": 3.0
+  },
+  "ReturnRewards": {
+    "Enabled": true,
+    "Tiers": [
+      { "MinAbsenceDays": 7,  "MaxAbsenceDays": 13, "Coins": 300.0,  "XP": 150,  "Items": [], "Commands": [], "Description": "Welcome back! (1 week)" },
+      { "MinAbsenceDays": 14, "MaxAbsenceDays": 29, "Coins": 750.0,  "XP": 400,  "Items": [], "Commands": [], "Description": "We missed you! (2 weeks)" },
+      { "MinAbsenceDays": 30, "MaxAbsenceDays": 89, "Coins": 2000.0, "XP": 1000, "Items": [], "Commands": [], "Description": "Grand return! (1 month)" },
+      { "MinAbsenceDays": 90, "MaxAbsenceDays": 9999,"Coins": 5000.0, "XP": 2500, "Items": [], "Commands": [], "Description": "Legendary return! (3+ months)" }
+    ]
+  },
+  "AntiAbuse": {
+    "MinOnlineMinutes": 5,
+    "RelogCooldownMinutes": 60,
+    "MaxClaimsPerDay": 1,
+    "LogAllRewards": true
+  },
+  "VipTiers": [
+    { "Permission": "ecotalerewards.vip.mvp_plus", "Multiplier": 2.0,  "DisplayName": "MVP+" },
+    { "Permission": "ecotalerewards.vip.mvp",      "Multiplier": 1.5,  "DisplayName": "MVP" },
+    { "Permission": "ecotalerewards.vip.vip",       "Multiplier": 1.25, "DisplayName": "VIP" }
+  ]
+}
