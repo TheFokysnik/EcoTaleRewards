@@ -5,10 +5,11 @@
     MMORPG-style player retention mechanics for Hytale servers
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-1.0.0-blue?style=flat-square" alt="Version">
-    <img src="https://img.shields.io/badge/Hytale-≥1.0.0-orange?style=flat-square" alt="Hytale">
-    <img src="https://img.shields.io/badge/Java-17+-green?style=flat-square" alt="Java 17+">
-    <img src="https://img.shields.io/badge/license-proprietary-red?style=flat-square" alt="License">
+![Hytale Server Mod](https://img.shields.io/badge/Hytale-Server%20Mod-0ea5e9?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.2.1-10b981?style=for-the-badge)
+![Java](https://img.shields.io/badge/Java-17+-f97316?style=for-the-badge&logo=openjdk&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-a855f7?style=for-the-badge)
+![Ecotale](https://img.shields.io/badge/Ecotale-1.0.7-6366f1?style=for-the-badge)
   </p>
 </p>
 
@@ -149,7 +150,7 @@ Both optional APIs are accessed via reflection — the plugin runs without them.
 
 ```bash
 # 1. Copy the JAR to your mods folder
-cp EcoTaleRewards-1.0.0.jar <server>/Mods/
+cp EcoTaleRewards-1.1.0.jar <server>/Mods/
 
 # 2. Start the server — default config auto-generates
 # 3. Edit the generated EcoTaleRewards.json
@@ -243,7 +244,7 @@ Ore_Cobalt:3
 # Requires Java 17+ and Gradle
 ./gradlew build
 
-# Output: build/libs/EcoTaleRewards-1.0.0.jar
+# Output: build/libs/EcoTaleRewards-1.1.0.jar
 ```
 
 ## Technical Details

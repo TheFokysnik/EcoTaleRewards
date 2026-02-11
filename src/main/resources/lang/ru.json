@@ -121,6 +121,9 @@
   "gui.already_claimed_today": "Уже получено. Приходите завтра!",
   "gui.cannot_claim_yet": "Награда ещё не готова.",
   "gui.day_info": "День {day}: +{coins}$ +{xp} XP — {status}",
+  "gui.progress": "Прогресс: {claimed}/{total} дн.",
+  "gui.total_claimed": "Получено:",
+  "gui.current_day": "День:",
 
   "day.status.locked": "Закрыто",
   "day.status.available": "Доступно",

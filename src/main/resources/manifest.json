@@ -1,7 +1,7 @@
 {
     "Group": "com.crystalrealm",
     "Name": "EcoTaleRewards",
-    "Version": "1.0.0",
+    "Version": "1.1.0",
     "Description": "Daily login calendar, streak system, and return rewards — MMORPG retention mechanics for Hytale servers.",
     "Main": "com.crystalrealm.ecotalerewards.EcoTaleRewardsPlugin",
     "IncludesAssetPack": true,

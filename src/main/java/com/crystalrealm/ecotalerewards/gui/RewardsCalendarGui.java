@@ -390,12 +390,13 @@ public final class RewardsCalendarGui extends InteractiveCustomUIPage<RewardsCal
             // Day label
             cmd.set(prefix + "Day.Text", L("gui.day_label", "day", String.valueOf(i)));
 
-            // Reward label (coins + XP)
+            // Split coins / XP labels
             if (rd != null) {
-                String rewardText = "+" + MessageUtil.formatCoins(rd.getCoins()) + "$ +" + rd.getXp() + " XP";
-                cmd.set(prefix + "Reward.Text", rewardText);
+                cmd.set(prefix + "Coins.Text", "+" + MessageUtil.formatCoins(rd.getCoins()) + "$");
+                cmd.set(prefix + "Xp.Text", "+" + rd.getXp() + " XP");
             } else {
-                cmd.set(prefix + "Reward.Text", "");
+                cmd.set(prefix + "Coins.Text", "");
+                cmd.set(prefix + "Xp.Text", "");
             }
 
             // Items row (with icon)
@@ -411,10 +412,10 @@ public final class RewardsCalendarGui extends InteractiveCustomUIPage<RewardsCal
                 cmd.set(prefix + "Items.Text", "");
             }
 
-            // Status text (human-readable, no unicode)
+            // Status text
             cmd.set(prefix + "Status.Text", statusText(status));
 
-            // Claim button — visible for the available day (anti-abuse checked on click)
+            // Claim button — visible for the available day
             if (status == DayStatus.AVAILABLE) {
                 cmd.set(prefix + "Btn.Visible", true);
                 cmd.set(prefix + "Btn.Text", canClaim
@@ -429,12 +430,20 @@ public final class RewardsCalendarGui extends InteractiveCustomUIPage<RewardsCal
     private void updateStreakPanel(@Nonnull UICommandBuilder cmd) {
         PlayerRewardData prd = storage.loadOrCreate(playerUuid);
 
+        // Left section: streak + multiplier
         cmd.set("#StreakLabel.Text", L("gui.streak_label"));
         cmd.set("#StreakValue.Text", String.valueOf(prd.getStreak()));
 
         double mult = streakService.calculateMultiplier(prd.getStreak());
         cmd.set("#MultLabel.Text", L("gui.mult_label"));
         cmd.set("#MultValue.Text", String.format("x%.2f", mult));
+
+        // Center: progress + next milestone
+        int totalDays = calendarService.getTotalDays();
+        int currentDay = prd.getCurrentDay();
+        int claimed = Math.min(currentDay - 1, totalDays);
+        if (prd.isClaimedDay(currentDay)) claimed = currentDay;
+        cmd.set("#ProgressText.Text", L("gui.progress", "claimed", String.valueOf(claimed), "total", String.valueOf(totalDays)));
 
         StreakMilestone next = streakService.getNextMilestone(prd.getStreak());
         if (next != null) {
@@ -445,6 +454,12 @@ public final class RewardsCalendarGui extends InteractiveCustomUIPage<RewardsCal
         } else {
             cmd.set("#NextMsLabel.Text", L("gui.all_milestones_done"));
         }
+
+        // Right section: claimed stats
+        cmd.set("#TotalCoinsLabel.Text", L("gui.total_claimed"));
+        cmd.set("#TotalCoinsValue.Text", String.valueOf(prd.getTotalClaimed()));
+        cmd.set("#TotalXpLabel.Text", L("gui.current_day"));
+        cmd.set("#TotalXpValue.Text", String.valueOf(prd.getCurrentDay()) + " / " + totalDays);
     }
 
     private void updateReturnBanner(@Nonnull UICommandBuilder cmd) {

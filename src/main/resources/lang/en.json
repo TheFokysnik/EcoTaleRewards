@@ -120,6 +120,9 @@
   "gui.already_claimed_today": "Already claimed today. Come back tomorrow!",
   "gui.cannot_claim_yet": "Reward not ready yet.",
   "gui.day_info": "Day {day}: +{coins}$ +{xp} XP — {status}",
+  "gui.progress": "Progress: {claimed}/{total} days",
+  "gui.total_claimed": "Claimed:",
+  "gui.current_day": "Day:",
 
   "day.status.locked": "Locked",
   "day.status.available": "Available",

@@ -203,26 +203,42 @@ $C.@PageOverlay {
         Group #EdCoins { LayoutMode: Left; Anchor: (Height: 28); Padding: (Left: 4, Right: 4);
           Label #EdCoinsLabel { Style: @White; Anchor: (Width: 140); Text: "Coins:"; }
           Label #EdCoinsValue { Style: @Value; Anchor: (Width: 100); Text: "0"; }
-          $C.@SecondaryTextButton #CoinsDn50 { Anchor: (Width: 56, Height: 24); Text: "-50"; }
+          Button #CoinsDn50 { Anchor: (Width: 60, Height: 24); Background: (Color: #1a1020); Style: (Hovered: (Background: (Color: #2a1830)), Pressed: (Background: (Color: #3a2840)));
+            Label { Style: (FontSize: 12, TextColor: #ff6666, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "-50"; }
+          }
           Group { Anchor: (Width: 3); }
-          $C.@SecondaryTextButton #CoinsUp50 { Anchor: (Width: 56, Height: 24); Text: "+50"; }
+          Button #CoinsUp50 { Anchor: (Width: 60, Height: 24); Background: (Color: #102010); Style: (Hovered: (Background: (Color: #183018)), Pressed: (Background: (Color: #284028)));
+            Label { Style: (FontSize: 12, TextColor: #66ff66, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "+50"; }
+          }
           Group { Anchor: (Width: 3); }
-          $C.@SecondaryTextButton #CoinsDn200 { Anchor: (Width: 62, Height: 24); Text: "-200"; }
+          Button #CoinsDn200 { Anchor: (Width: 66, Height: 24); Background: (Color: #1a1020); Style: (Hovered: (Background: (Color: #2a1830)), Pressed: (Background: (Color: #3a2840)));
+            Label { Style: (FontSize: 12, TextColor: #ff6666, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "-200"; }
+          }
           Group { Anchor: (Width: 3); }
-          $C.@SecondaryTextButton #CoinsUp200 { Anchor: (Width: 62, Height: 24); Text: "+200"; }
+          Button #CoinsUp200 { Anchor: (Width: 66, Height: 24); Background: (Color: #102010); Style: (Hovered: (Background: (Color: #183018)), Pressed: (Background: (Color: #284028)));
+            Label { Style: (FontSize: 12, TextColor: #66ff66, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "+200"; }
+          }
         }
 
         // XP row
         Group #EdXP { LayoutMode: Left; Anchor: (Height: 28); Padding: (Left: 4, Right: 4);
           Label #EdXPLabel { Style: @White; Anchor: (Width: 140); Text: "XP:"; }
           Label #EdXPValue { Style: @Value; Anchor: (Width: 100); Text: "0"; }
-          $C.@SecondaryTextButton #XPDn25 { Anchor: (Width: 56, Height: 24); Text: "-25"; }
+          Button #XPDn25 { Anchor: (Width: 60, Height: 24); Background: (Color: #1a1020); Style: (Hovered: (Background: (Color: #2a1830)), Pressed: (Background: (Color: #3a2840)));
+            Label { Style: (FontSize: 12, TextColor: #ff6666, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "-25"; }
+          }
           Group { Anchor: (Width: 3); }
-          $C.@SecondaryTextButton #XPUp25 { Anchor: (Width: 56, Height: 24); Text: "+25"; }
+          Button #XPUp25 { Anchor: (Width: 60, Height: 24); Background: (Color: #102010); Style: (Hovered: (Background: (Color: #183018)), Pressed: (Background: (Color: #284028)));
+            Label { Style: (FontSize: 12, TextColor: #66ff66, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "+25"; }
+          }
           Group { Anchor: (Width: 3); }
-          $C.@SecondaryTextButton #XPDn100 { Anchor: (Width: 62, Height: 24); Text: "-100"; }
+          Button #XPDn100 { Anchor: (Width: 66, Height: 24); Background: (Color: #1a1020); Style: (Hovered: (Background: (Color: #2a1830)), Pressed: (Background: (Color: #3a2840)));
+            Label { Style: (FontSize: 12, TextColor: #ff6666, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "-100"; }
+          }
           Group { Anchor: (Width: 3); }
-          $C.@SecondaryTextButton #XPUp100 { Anchor: (Width: 62, Height: 24); Text: "+100"; }
+          Button #XPUp100 { Anchor: (Width: 66, Height: 24); Background: (Color: #102010); Style: (Hovered: (Background: (Color: #183018)), Pressed: (Background: (Color: #284028)));
+            Label { Style: (FontSize: 12, TextColor: #66ff66, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "+100"; }
+          }
         }
 
         // Items row (with icons and remove button)
