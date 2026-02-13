@@ -6,7 +6,7 @@
   </p>
 
 ![Hytale Server Mod](https://img.shields.io/badge/Hytale-Server%20Mod-0ea5e9?style=for-the-badge)
-![Version](https://img.shields.io/badge/version-1.1.2-10b981?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.1.3-10b981?style=for-the-badge)
 ![Java](https://img.shields.io/badge/Java-17+-f97316?style=for-the-badge&logo=openjdk&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-a855f7?style=for-the-badge)
 ![Ecotale](https://img.shields.io/badge/Ecotale-1.0.7-6366f1?style=for-the-badge)
@@ -32,7 +32,7 @@ EcoTaleRewards is a Hytale server plugin that drives player retention through a 
 - Per-day rewards: coins, XP, items, commands
 - Weekly milestone days with bonus loot
 - Strict or soft mode with configurable grace period
-- Auto-opens 3 seconds after player joins
+- Auto-opens 3 seconds after first daily login (once per day)
 
 </td>
 <td width="50%">
@@ -73,7 +73,7 @@ EcoTaleRewards is a Hytale server plugin that drives player retention through a 
 - 🌐 **Multi-language** — English & Russian built-in, per-player switching
 - ⚙️ **Admin GUI** — live config editing, calendar editor, slider controls
 - 💾 **JSON storage** — per-player files, auto-save every 5 minutes
-- 🔌 **Soft dependencies** — works with or without EcotaleAPI / RPG Leveling
+- 🔌 **Soft dependencies** — works with or without EcotaleAPI / RPG Leveling / LuckPerms
 
 ## Architecture
 
@@ -104,6 +104,7 @@ EcoTaleRewards/
 │   │   └── StreakService.java         # Consecutive login tracking
 │   └── util/
 │       ├── AntiAbuseGuard.java        # Abuse prevention checks
+│       ├── PermissionHelper.java      # LuckPerms permission resolution
 │       └── PluginLogger.java          # Structured logging
 ├── src/main/resources/
 │   ├── manifest.json                  # Hytale plugin manifest
@@ -124,9 +125,9 @@ EcoTaleRewards/
 | `/rewards admin` | `ecotalerewards.admin` | Open the admin GUI |
 | `/rewards reload` | `ecotalerewards.admin` | Reload configuration |
 | `/rewards reset <uuid>` | `ecotalerewards.admin` | Reset a player's data |
-| `/rewards langen` | — | Switch to English |
-| `/rewards langru` | — | Switch to Russian |
-| `/rewards help` | — | Command reference |
+| `/rewards langen` | `ecotalerewards.use` | Switch to English |
+| `/rewards langru` | `ecotalerewards.use` | Switch to Russian |
+| `/rewards help` | `ecotalerewards.use` | Command reference |
 
 ## Permissions
 
@@ -145,14 +146,15 @@ EcoTaleRewards/
 | [Ecotale](https://hytale-server.pro-gamedev.ru) ≥1.0.0 | **Required** | Core server plugin |
 | EcotaleAPI | Optional | Economy integration (coin deposits) |
 | RPG Leveling | Optional | XP system integration |
+| LuckPerms | Optional | Group-based permission resolution |
 
-Both optional APIs are accessed via reflection — the plugin runs without them.
+All optional APIs are accessed via reflection — the plugin runs without them.
 
 ## Installation
 
 ```bash
 # 1. Copy the JAR to your mods folder
-cp EcoTaleRewards-1.1.2.jar <server>/Mods/
+cp EcoTaleRewards-1.1.3.jar <server>/Mods/
 
 # 2. Start the server — default config auto-generates
 # 3. Edit the generated EcoTaleRewards.json
@@ -246,10 +248,14 @@ Ore_Cobalt:3
 # Requires Java 17+ and Gradle
 ./gradlew build
 
-# Output: build/libs/EcoTaleRewards-1.1.2.jar
+# Output: build/libs/EcoTaleRewards-1.1.3.jar
 ```
 
 ## Changelog
+
+### v1.1.3
+- **Fix:** Server crash on startup — removed `GameMode` enum dependency (`NoClassDefFoundError`), switched to string-based `setPermissionGroups("Adventure")`
+- **Improved:** Calendar GUI now auto-opens only once per day on first login (previously opened every time the player joined or switched instances)
 
 ### v1.1.2
 - **Fix:** GUI not opening for users with LuckPerms — `openGuiForSender` now resolves Player via reflection fallback (`getPlayer()`, `getHandle()`) when direct `instanceof Player` cast fails due to permission plugin wrappers

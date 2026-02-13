@@ -6,6 +6,7 @@ import com.crystalrealm.ecotalerewards.model.ReturnRewardTier;
 import com.crystalrealm.ecotalerewards.model.RewardDay;
 import com.crystalrealm.ecotalerewards.model.StreakMilestone;
 import com.crystalrealm.ecotalerewards.util.PluginLogger;
+import com.crystalrealm.ecotalerewards.util.PermissionHelper;
 
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
@@ -144,24 +145,29 @@ public class RewardService {
 
     /**
      * Get VIP multiplier for a player based on permissions.
+     * When commandSender is null (e.g. GUI claims), falls back to PermissionHelper.
      */
     public double getVipMultiplier(@Nonnull UUID playerUuid,
                                    @Nullable Object commandSender) {
-        if (commandSender == null) return 1.0;
-
         List<RewardsConfig.VipTier> vipTiers = config.getVipTiers();
         if (vipTiers == null || vipTiers.isEmpty()) return 1.0;
 
         try {
             if (commandSender instanceof CommandSender cs) {
                 for (RewardsConfig.VipTier tier : vipTiers) {
-                    if (cs.hasPermission(tier.getPermission())) return tier.getMultiplier();
+                    if (hasPermWithWildcard(cs, tier.getPermission())) return tier.getMultiplier();
                 }
-            } else {
+            } else if (commandSender != null) {
                 Method hasPerm = commandSender.getClass().getMethod("hasPermission", String.class);
                 for (RewardsConfig.VipTier tier : vipTiers) {
                     boolean has = (boolean) hasPerm.invoke(commandSender, tier.getPermission());
                     if (has) return tier.getMultiplier();
+                }
+            } else {
+                // No sender available (GUI context) — use PermissionHelper (LuckPerms)
+                PermissionHelper ph = PermissionHelper.getInstance();
+                for (RewardsConfig.VipTier tier : vipTiers) {
+                    if (ph.hasPermission(playerUuid, tier.getPermission())) return tier.getMultiplier();
                 }
             }
         } catch (Exception e) {
@@ -169,6 +175,56 @@ public class RewardService {
         }
 
         return 1.0;
+    }
+
+    /**
+     * Get the display name of the player's VIP tier, or null if no VIP.
+     */
+    @Nullable
+    public String getVipTierName(@Nonnull UUID playerUuid, @Nullable Object commandSender) {
+        List<RewardsConfig.VipTier> vipTiers = config.getVipTiers();
+        if (vipTiers == null || vipTiers.isEmpty()) return null;
+
+        try {
+            if (commandSender instanceof CommandSender cs) {
+                for (RewardsConfig.VipTier tier : vipTiers) {
+                    if (hasPermWithWildcard(cs, tier.getPermission())) return tier.getDisplayName();
+                }
+            } else if (commandSender != null) {
+                Method hasPerm = commandSender.getClass().getMethod("hasPermission", String.class);
+                for (RewardsConfig.VipTier tier : vipTiers) {
+                    boolean has = (boolean) hasPerm.invoke(commandSender, tier.getPermission());
+                    if (has) return tier.getDisplayName();
+                }
+            } else {
+                PermissionHelper ph = PermissionHelper.getInstance();
+                for (RewardsConfig.VipTier tier : vipTiers) {
+                    if (ph.hasPermission(playerUuid, tier.getPermission())) return tier.getDisplayName();
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("VIP tier name check failed: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Check permission with wildcard support for Hytale's default permission system.
+     */
+    private static boolean hasPermWithWildcard(CommandSender sender, String perm) {
+        if (sender.hasPermission(perm)) return true;
+        String[] parts = perm.split("\\.");
+        for (int i = parts.length - 1; i >= 1; i--) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < i; j++) {
+                if (j > 0) sb.append('.');
+                sb.append(parts[j]);
+            }
+            sb.append(".*");
+            if (sender.hasPermission(sb.toString())) return true;
+        }
+        if (sender.hasPermission("*")) return true;
+        return PermissionHelper.getInstance().hasPermission(sender.getUuid(), perm);
     }
 
     // ═════════════════════════════════════════════════════════

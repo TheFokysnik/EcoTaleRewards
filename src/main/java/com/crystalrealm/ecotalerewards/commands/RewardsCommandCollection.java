@@ -14,6 +14,7 @@ import com.crystalrealm.ecotalerewards.storage.RewardStorage;
 import com.crystalrealm.ecotalerewards.streaks.StreakService;
 import com.crystalrealm.ecotalerewards.util.MessageUtil;
 import com.crystalrealm.ecotalerewards.util.MiniMessageParser;
+import com.crystalrealm.ecotalerewards.util.PermissionHelper;
 import com.crystalrealm.ecotalerewards.util.PluginLogger;
 
 import com.hypixel.hytale.component.ComponentType;
@@ -81,6 +82,7 @@ public class RewardsCommandCollection extends AbstractCommandCollection {
                                     @Nonnull RewardStorage storage,
                                     @Nonnull String pluginVersion) {
         super("rewards", "EcoTaleRewards — daily login calendar & streak system");
+        this.setPermissionGroups("Adventure");
 
         this.configManager  = configManager;
         this.langManager    = langManager;
@@ -220,7 +222,9 @@ public class RewardsCommandCollection extends AbstractCommandCollection {
 
             UUID uuid = sender.getUuid();
             PlayerRewardData prd = storage.loadOrCreate(uuid);
-            double mult = streakService.calculateMultiplier(prd.getStreak());
+            double streakMult = streakService.calculateMultiplier(prd.getStreak());
+            double vipMult = rewardService.getVipMultiplier(uuid, sender);
+            double totalMult = streakMult * vipMult;
 
             context.sendMessage(msg(L(sender, "cmd.info.header")));
             context.sendMessage(msg(L(sender, "cmd.info.day",
@@ -230,7 +234,15 @@ public class RewardsCommandCollection extends AbstractCommandCollection {
                     "streak", String.valueOf(prd.getStreak()),
                     "longest", String.valueOf(prd.getLongestStreak()))));
             context.sendMessage(msg(L(sender, "cmd.info.multiplier",
-                    "mult", String.format("%.2f", mult))));
+                    "mult", String.format("%.2f", totalMult))));
+
+            // Show VIP tier if player has one
+            String vipName = rewardService.getVipTierName(uuid, sender);
+            if (vipName != null) {
+                context.sendMessage(msg(L(sender, "cmd.info.vip",
+                        "tier", vipName, "mult", String.format("%.2f", vipMult))));
+            }
+
             context.sendMessage(msg(L(sender, "cmd.info.claimed",
                     "count", String.valueOf(prd.getTotalClaimed()))));
 
@@ -326,6 +338,7 @@ public class RewardsCommandCollection extends AbstractCommandCollection {
                 calendarService.reload();
                 streakService.reload();
                 returnService.reload();
+                PermissionHelper.getInstance().reload();
                 context.sendMessage(msg(L(sender, "cmd.reload.success")));
             } else {
                 context.sendMessage(msg(L(sender, "cmd.reload.fail")));
@@ -529,11 +542,38 @@ public class RewardsCommandCollection extends AbstractCommandCollection {
     }
 
     private boolean checkPerm(CommandSender sender, CommandContext ctx, String perm) {
-        if (!sender.hasPermission(perm)) {
-            ctx.sendMessage(msg(L(sender, "cmd.no_permission")));
-            return false;
+        if (hasPermWithWildcard(sender, perm)) return true;
+        ctx.sendMessage(msg(L(sender, "cmd.no_permission")));
+        return false;
+    }
+
+    /**
+     * Check permission with wildcard support.
+     * Hytale's default permission system does NOT resolve wildcards,
+     * so we check: exact → parent.* → grandparent.* → *
+     * e.g. "ecotalerewards.admin.reload" checks:
+     *   1) ecotalerewards.admin.reload
+     *   2) ecotalerewards.admin.*
+     *   3) ecotalerewards.*
+     *   4) *
+     */
+    static boolean hasPermWithWildcard(CommandSender sender, String perm) {
+        // 1. Native check (works with LuckPerms, OP, etc.)
+        if (sender.hasPermission(perm)) return true;
+        // 2. Wildcard chain via native: a.b.c → a.b.* → a.* → *
+        String[] parts = perm.split("\\.");
+        for (int i = parts.length - 1; i >= 1; i--) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < i; j++) {
+                if (j > 0) sb.append('.');
+                sb.append(parts[j]);
+            }
+            sb.append(".*");
+            if (sender.hasPermission(sb.toString())) return true;
         }
-        return true;
+        if (sender.hasPermission("*")) return true;
+        // 3. Fallback: resolve from permissions.json groups
+        return PermissionHelper.getInstance().hasPermission(sender.getUuid(), perm);
     }
 
     private static com.hypixel.hytale.server.core.Message msg(String miniMessage) {

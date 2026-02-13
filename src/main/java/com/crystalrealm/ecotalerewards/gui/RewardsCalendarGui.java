@@ -434,9 +434,17 @@ public final class RewardsCalendarGui extends InteractiveCustomUIPage<RewardsCal
         cmd.set("#StreakLabel.Text", L("gui.streak_label"));
         cmd.set("#StreakValue.Text", String.valueOf(prd.getStreak()));
 
-        double mult = streakService.calculateMultiplier(prd.getStreak());
+        double streakMult = streakService.calculateMultiplier(prd.getStreak());
+        double vipMult = rewardService.getVipMultiplier(playerUuid, null);
+        double totalMult = streakMult * vipMult;
+
         cmd.set("#MultLabel.Text", L("gui.mult_label"));
-        cmd.set("#MultValue.Text", String.format("x%.2f", mult));
+        String vipName = rewardService.getVipTierName(playerUuid, null);
+        if (vipName != null) {
+            cmd.set("#MultValue.Text", String.format("x%.2f [%s]", totalMult, vipName));
+        } else {
+            cmd.set("#MultValue.Text", String.format("x%.2f", totalMult));
+        }
 
         // Center: progress + next milestone
         int totalDays = calendarService.getTotalDays();

@@ -16,6 +16,7 @@ import com.crystalrealm.ecotalerewards.storage.JsonRewardStorage;
 import com.crystalrealm.ecotalerewards.storage.RewardStorage;
 import com.crystalrealm.ecotalerewards.streaks.StreakService;
 import com.crystalrealm.ecotalerewards.util.MessageUtil;
+import com.crystalrealm.ecotalerewards.util.PermissionHelper;
 import com.crystalrealm.ecotalerewards.util.PluginLogger;
 
 import com.hypixel.hytale.server.core.HytaleServer;
@@ -49,12 +50,12 @@ import java.util.concurrent.TimeUnit;
  *   <li>JSON storage, full RU/EN localization</li>
  * </ul>
  *
- * @version 1.0.0
+ * @version 1.1.3
  */
 public class EcoTaleRewardsPlugin extends JavaPlugin {
 
     private static final PluginLogger LOGGER = PluginLogger.forEnclosingClass();
-    private static final String VERSION = "1.0.0";
+    private static final String VERSION = "1.1.3";
 
     // ── Services ────────────────────────────────────────────
     private ConfigManager      configManager;
@@ -87,6 +88,9 @@ public class EcoTaleRewardsPlugin extends JavaPlugin {
         configManager = new ConfigManager(getDataDirectory());
         configManager.loadOrCreate();
         RewardsConfig config = configManager.getConfig();
+
+        // 1b. Permission resolver (reads permissions.json for group-based checks)
+        PermissionHelper.getInstance().init(getDataDirectory());
 
         // 2. Language
         langManager = new LangManager(getDataDirectory());
@@ -313,10 +317,15 @@ public class EcoTaleRewardsPlugin extends JavaPlugin {
             }
         }
 
-        // Auto-open calendar GUI after a short delay (3s so notifications are seen first)
-        HytaleServer.SCHEDULED_EXECUTOR.schedule(
-                () -> openCalendarGuiForPlayer(player, playerUuid),
-                3, TimeUnit.SECONDS);
+        // Auto-open calendar GUI only ONCE per day (first login of the day)
+        if (!data.hasAutoGuiShownToday()) {
+            data.markAutoGuiShown();
+            HytaleServer.SCHEDULED_EXECUTOR.schedule(
+                    () -> openCalendarGuiForPlayer(player, playerUuid),
+                    3, TimeUnit.SECONDS);
+        } else {
+            LOGGER.debug("[autoGUI] Skipped for {} — already shown today", playerUuid);
+        }
     }
 
     /**

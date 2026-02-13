@@ -52,6 +52,10 @@ public final class PlayerRewardData {
     @Nullable
     private transient LocalDate claimsTodayDate;
 
+    /** Date when the calendar GUI was last auto-shown (once per server-day). */
+    @Nullable
+    private transient LocalDate lastAutoGuiDate;
+
     public PlayerRewardData(@Nonnull UUID playerUuid) {
         this.playerUuid = playerUuid;
         this.currentDay = 1;
@@ -78,6 +82,20 @@ public final class PlayerRewardData {
     public long getSessionJoinTime() { return sessionJoinTime; }
     public int getClaimsToday() { return claimsToday; }
     @Nullable public LocalDate getClaimsTodayDate() { return claimsTodayDate; }
+
+    /**
+     * Returns true if the auto-GUI has already been shown today.
+     */
+    public boolean hasAutoGuiShownToday() {
+        return LocalDate.now().equals(lastAutoGuiDate);
+    }
+
+    /**
+     * Mark that the auto-GUI was shown today.
+     */
+    public void markAutoGuiShown() {
+        this.lastAutoGuiDate = LocalDate.now();
+    }
 
     // ── Setters ─────────────────────────────────────────────
 
