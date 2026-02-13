@@ -1,4 +1,4 @@
-# EcoTaleRewards v1.1.0
+# EcoTaleRewards v1.1.2
 
 **Ежедневный календарь наград, стрик-система и награды за возвращение для серверов Hytale**
 
@@ -105,7 +105,7 @@
 
 ## ⚡ Быстрая установка
 
-1. Положите `EcoTaleRewards-1.1.0.jar` в папку `Mods` вашего сервера
+1. Положите `EcoTaleRewards-1.1.2.jar` в папку `Mods` вашего сервера
 2. Убедитесь, что плагин **Ecotale** установлен
 3. Запустите сервер — конфигурация по умолчанию создастся автоматически
 4. Отредактируйте `EcoTaleRewards.json` под свои нужды
@@ -210,7 +210,7 @@ give {player} some_item 5
 # Требуется Java 17+ и Gradle
 ./gradlew build
 
-# Результат: build/libs/EcoTaleRewards-1.1.0.jar
+# Результат: build/libs/EcoTaleRewards-1.1.2.jar
 ```
 
 ---

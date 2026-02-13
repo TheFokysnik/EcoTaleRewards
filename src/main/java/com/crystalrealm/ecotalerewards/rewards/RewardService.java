@@ -10,6 +10,7 @@ import com.crystalrealm.ecotalerewards.util.PluginLogger;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.server.core.command.system.CommandSender;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
@@ -152,13 +153,19 @@ public class RewardService {
         if (vipTiers == null || vipTiers.isEmpty()) return 1.0;
 
         try {
-            Method hasPerm = commandSender.getClass().getMethod("hasPermission", String.class);
-            for (RewardsConfig.VipTier tier : vipTiers) {
-                boolean has = (boolean) hasPerm.invoke(commandSender, tier.getPermission());
-                if (has) return tier.getMultiplier();
+            if (commandSender instanceof CommandSender cs) {
+                for (RewardsConfig.VipTier tier : vipTiers) {
+                    if (cs.hasPermission(tier.getPermission())) return tier.getMultiplier();
+                }
+            } else {
+                Method hasPerm = commandSender.getClass().getMethod("hasPermission", String.class);
+                for (RewardsConfig.VipTier tier : vipTiers) {
+                    boolean has = (boolean) hasPerm.invoke(commandSender, tier.getPermission());
+                    if (has) return tier.getMultiplier();
+                }
             }
         } catch (Exception e) {
-            LOGGER.debug("VIP check failed: {}", e.getMessage());
+            LOGGER.warn("VIP permission check failed: {}", e.getMessage());
         }
 
         return 1.0;

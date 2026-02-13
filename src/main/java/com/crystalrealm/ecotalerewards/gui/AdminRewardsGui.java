@@ -34,7 +34,7 @@ import java.util.UUID;
  * <p>Calendar Editor allows navigating through days 1-30 and adjusting
  * Coins, XP, and Items for each day with +/- buttons.</p>
  *
- * @version 1.1.0
+ * @version 1.1.2
  */
 public final class AdminRewardsGui extends InteractiveCustomUIPage<AdminRewardsGui.AdminEventData> {
 

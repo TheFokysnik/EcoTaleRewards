@@ -6,7 +6,7 @@
   </p>
   <p align="center">
 ![Hytale Server Mod](https://img.shields.io/badge/Hytale-Server%20Mod-0ea5e9?style=for-the-badge)
-![Version](https://img.shields.io/badge/version-1.2.1-10b981?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.1.1-10b981?style=for-the-badge)
 ![Java](https://img.shields.io/badge/Java-17+-f97316?style=for-the-badge&logo=openjdk&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-a855f7?style=for-the-badge)
 ![Ecotale](https://img.shields.io/badge/Ecotale-1.0.7-6366f1?style=for-the-badge)
@@ -150,7 +150,7 @@ Both optional APIs are accessed via reflection — the plugin runs without them.
 
 ```bash
 # 1. Copy the JAR to your mods folder
-cp EcoTaleRewards-1.1.0.jar <server>/Mods/
+cp EcoTaleRewards-1.1.2.jar <server>/Mods/
 
 # 2. Start the server — default config auto-generates
 # 3. Edit the generated EcoTaleRewards.json
@@ -244,8 +244,24 @@ Ore_Cobalt:3
 # Requires Java 17+ and Gradle
 ./gradlew build
 
-# Output: build/libs/EcoTaleRewards-1.1.0.jar
+# Output: build/libs/EcoTaleRewards-1.1.2.jar
 ```
+
+## Changelog
+
+### v1.1.2
+- **Fix:** GUI not opening for users with LuckPerms — `openGuiForSender` now resolves Player via reflection fallback (`getPlayer()`, `getHandle()`) when direct `instanceof Player` cast fails due to permission plugin wrappers
+- **Fix:** All silent GUI failure points now send error messages to the player instead of failing silently
+- **Improved:** Detailed logging at every failure point (sender class name, ref validity, component type) for easier debugging
+
+### v1.1.1
+- **Fix:** `/rewards langen`, `/rewards langru`, `/rewards help` now require `ecotalerewards.use` permission (previously accessible without any permission)
+- **Fix:** `/rewards reset` and `/rewards reload` now work from server console (previously blocked by `isPlayer()` check)
+- **Improved:** VIP permission check in `RewardService` now uses direct `CommandSender` cast instead of reflection, with reflection fallback for non-standard callers
+- **Improved:** VIP check failures now logged at WARN level instead of silently swallowed at DEBUG
+
+### v1.1.0
+- Initial public release
 
 ## Technical Details
 
