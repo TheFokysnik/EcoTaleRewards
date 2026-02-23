@@ -56,7 +56,7 @@
   "cmd.help.admin_reset": "<yellow>/rewards admin reset <player></yellow> <gray>— Reset player data",
   "cmd.help.admin_grant": "<yellow>/rewards admin grant <player> <day></yellow> <gray>— Grant daily reward",
   "cmd.help.reload": "<yellow>/rewards reload</yellow> <gray>— Reload config <red>[admin]",
-  "cmd.help.lang": "<yellow>/rewards langen | langru</yellow> <gray>— Change language",
+  "cmd.help.lang": "<yellow>/rewards lang<code></yellow> <gray>— Change language (en/ru/pt_br/fr/de/es)",
   "cmd.help.help": "<yellow>/rewards help</yellow> <gray>— Show this help",
   "cmd.help.footer": "<gold>═══════════════════════",
 
@@ -81,7 +81,7 @@
   "cmd.reload.fail": "<red>Failed to reload configuration!",
   "cmd.no_permission": "<red>You do not have permission to use this command.",
   "cmd.player_only": "<red>This command can only be used by players.",
-  "cmd.lang.usage": "<yellow>Usage: /rewards langen | /rewards langru",
+  "cmd.lang.usage": "<yellow>Usage: /rewards lang<code> <gray>where code: en, ru, pt_br, fr, de, es",
   "cmd.lang.changed": "<green>Language changed successfully.",
   "cmd.lang.invalid": "<red>Unsupported language.",
 
@@ -144,6 +144,8 @@
   "gui.admin.ed_coins": "Coins:",
   "gui.admin.ed_xp": "XP:",
   "gui.admin.ed_items": "Items:",
+  "gui.admin.ed_description": "Description:",
+  "gui.admin.ed_commands": "Commands:",
   "gui.admin.btn_save_day": "Save Day",
   "gui.admin.btn_add_item": "+ Add",
   "gui.admin.btn_remove_item": "- Remove Last",

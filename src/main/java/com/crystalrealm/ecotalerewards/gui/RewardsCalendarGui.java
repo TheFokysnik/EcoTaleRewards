@@ -399,21 +399,40 @@ public final class RewardsCalendarGui extends InteractiveCustomUIPage<RewardsCal
                 cmd.set(prefix + "Xp.Text", "");
             }
 
-            // Items row (with icon)
+            // Items — two separate rows
             if (rd != null && !rd.getItems().isEmpty()) {
-                cmd.set(prefix + "ItemRow.Visible", true);
-                cmd.set(prefix + "Items.Text", formatItemsShort(rd.getItems()));
-                String iconId = extractItemNameForIcon(rd.getItems().get(0));
-                if (iconId != null) {
-                    cmd.set(prefix + "Icon.ItemId", iconId);
+                // Item 1
+                cmd.set(prefix + "Item1.Visible", true);
+                String icon1Id = extractItemNameForIcon(rd.getItems().get(0));
+                if (icon1Id != null) {
+                    cmd.set(prefix + "Icon1.ItemId", icon1Id);
+                }
+                cmd.set(prefix + "Item1Name.Text", formatSingleItem(rd.getItems().get(0)));
+
+                // Item 2
+                if (rd.getItems().size() >= 2) {
+                    cmd.set(prefix + "Item2.Visible", true);
+                    String icon2Id = extractItemNameForIcon(rd.getItems().get(1));
+                    if (icon2Id != null) {
+                        cmd.set(prefix + "Icon2.ItemId", icon2Id);
+                    }
+                    String item2Text = formatSingleItem(rd.getItems().get(1));
+                    if (rd.getItems().size() > 2) {
+                        item2Text += " +" + (rd.getItems().size() - 2);
+                    }
+                    cmd.set(prefix + "Item2Name.Text", item2Text);
+                } else {
+                    cmd.set(prefix + "Item2.Visible", false);
                 }
             } else {
-                cmd.set(prefix + "ItemRow.Visible", false);
-                cmd.set(prefix + "Items.Text", "");
+                cmd.set(prefix + "Item1.Visible", false);
+                cmd.set(prefix + "Item2.Visible", false);
             }
 
-            // Status text
+            // Status text + style + dynamic background color based on state
             cmd.set(prefix + "Status.Text", statusText(status));
+            cmd.set(prefix + "Status.Style.TextColor", statusColor(status));
+            cmd.set(prefix + ".Background.Color", dayBackgroundColor(i, status));
 
             // Claim button — visible for the available day
             if (status == DayStatus.AVAILABLE) {
@@ -552,35 +571,65 @@ public final class RewardsCalendarGui extends InteractiveCustomUIPage<RewardsCal
         return L("day.status." + status.getId());
     }
 
+    /**
+     * Returns a dynamic RGBA background color for a calendar day cell based on status.
+     * Milestone days (7,14,21,28,30) get enhanced accents.
+     */
+    private static String dayBackgroundColor(int day, @Nonnull DayStatus status) {
+        boolean milestone = (day % 7 == 0) || day == 30;
+        return switch (status) {
+            case CLAIMED   -> milestone ? "#122a18d9" : "#0f2214cc"; // darker green tint
+            case AVAILABLE -> milestone ? "#2a2808e6" : "#1a2808e0"; // gold/green glow
+            case MISSED    -> "#1a0a0ab0";                           // red dim
+            case LOCKED    -> milestone ? "#14141abb" : "#0c0e16aa"; // subtle dark
+        };
+    }
+
+    /**
+     * Returns a hex color string for the status label based on DayStatus.
+     */
+    private static String statusColor(@Nonnull DayStatus status) {
+        return switch (status) {
+            case CLAIMED   -> "#44dd66";
+            case AVAILABLE -> "#f0c040";
+            case MISSED    -> "#dd4444";
+            case LOCKED    -> "#667788";
+        };
+    }
+
+    private static String formatSingleItem(@Nonnull String itemEntry) {
+        String[] parts = itemEntry.split(":");
+        String rawName;
+        String count = "1";
+        if (parts.length >= 3) {
+            rawName = parts[1];
+            count = parts[2];
+        } else if (parts.length == 2) {
+            try {
+                Integer.parseInt(parts[1]);
+                rawName = parts[0];
+                count = parts[1];
+            } catch (NumberFormatException e) {
+                rawName = parts[1];
+            }
+        } else {
+            rawName = parts[0];
+        }
+        String name = capitalize(rawName.replace('_', ' '));
+        if (name.length() > 14) name = name.substring(0, 12) + "..";
+        if (!"1".equals(count)) name += " x" + count;
+        return name;
+    }
+
     private static String formatItemsShort(@Nonnull java.util.List<String> items) {
         if (items.isEmpty()) return "";
+        int limit = Math.min(items.size(), 2);
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < items.size(); i++) {
+        for (int i = 0; i < limit; i++) {
             if (i > 0) sb.append(", ");
-            String item = items.get(i);
-            // Format: "namespace:item_name:count" or "item_name:count" or just "item_name"
-            String[] parts = item.split(":");
-            String rawName;
-            String count = "1";
-            if (parts.length >= 3) {
-                rawName = parts[1];
-                count = parts[2];
-            } else if (parts.length == 2) {
-                // Determine if second part is count (number) or item name (namespace:name)
-                try {
-                    Integer.parseInt(parts[1]);
-                    rawName = parts[0];
-                    count = parts[1];
-                } catch (NumberFormatException e) {
-                    rawName = parts[1];
-                }
-            } else {
-                rawName = parts[0];
-            }
-            String name = capitalize(rawName.replace('_', ' '));
-            sb.append(name);
-            if (!"1".equals(count)) sb.append(" x").append(count);
+            sb.append(formatSingleItem(items.get(i)));
         }
+        if (items.size() > 2) sb.append(" +").append(items.size() - 2);
         return sb.toString();
     }
 

@@ -17,8 +17,11 @@ public class RewardsConfig {
     private ReturnRewardsSection ReturnRewards = new ReturnRewardsSection();
     private AntiAbuseSection AntiAbuse = new AntiAbuseSection();
     private List<VipTier> VipTiers = new ArrayList<>();
+    private GenericEconomySection GenericEconomy;
+    private GenericLevelingSection GenericLeveling;
+    private MMOSkillTreeSection MMOSkillTree;
 
-    // ── Getters ─────────────────────────────────────────────
+    // ── Getters ─────────────────────────────────────────────────
 
     public GeneralSection getGeneral() { return General; }
     public CalendarSection getCalendar() { return Calendar; }
@@ -26,6 +29,15 @@ public class RewardsConfig {
     public ReturnRewardsSection getReturnRewards() { return ReturnRewards; }
     public AntiAbuseSection getAntiAbuse() { return AntiAbuse; }
     public List<VipTier> getVipTiers() { return VipTiers; }
+    public GenericEconomySection getGenericEconomy() {
+        return GenericEconomy != null ? GenericEconomy : new GenericEconomySection();
+    }
+    public GenericLevelingSection getGenericLeveling() {
+        return GenericLeveling != null ? GenericLeveling : new GenericLevelingSection();
+    }
+    public MMOSkillTreeSection getMMOSkillTree() {
+        return MMOSkillTree != null ? MMOSkillTree : new MMOSkillTreeSection();
+    }
 
     // ═════════════════════════════════════════════════════════
     //  SECTION CLASSES
@@ -36,6 +48,8 @@ public class RewardsConfig {
         private String Language = "ru";
         private String MessagePrefix = "<dark_gray>[<gold>\uD83C\uDF81<dark_gray>]";
         private int AutoSaveIntervalMinutes = 5;
+        private String EconomyProvider = "ecotale";
+        private String LevelProvider = "rpgleveling";
 
         public boolean isDebugMode() { return DebugMode; }
         public void setDebugMode(boolean v) { DebugMode = v; }
@@ -44,6 +58,8 @@ public class RewardsConfig {
         public String getMessagePrefix() { return MessagePrefix; }
         public int getAutoSaveIntervalMinutes() { return AutoSaveIntervalMinutes; }
         public void setAutoSaveIntervalMinutes(int v) { AutoSaveIntervalMinutes = Math.max(1, v); }
+        public String getEconomyProvider() { return EconomyProvider != null ? EconomyProvider : "ecotale"; }
+        public String getLevelProvider() { return LevelProvider != null ? LevelProvider : "rpgleveling"; }
     }
 
     public static class CalendarSection {
@@ -165,5 +181,44 @@ public class RewardsConfig {
         public String getPermission() { return Permission; }
         public double getMultiplier() { return Multiplier; }
         public String getDisplayName() { return DisplayName; }
+    }
+
+    /** Config section for a generic economy plugin adapter. */
+    public static class GenericEconomySection {
+        private String ClassName = "";
+        private String InstanceMethod = "";
+        private String DepositMethod = "deposit";
+        private boolean DepositHasReason = false;
+
+        public String getClassName() { return ClassName; }
+        public String getInstanceMethod() { return InstanceMethod; }
+        public String getDepositMethod() { return DepositMethod; }
+        public boolean isDepositHasReason() { return DepositHasReason; }
+
+        public boolean isConfigured() {
+            return ClassName != null && !ClassName.isBlank();
+        }
+    }
+
+    /** Config section for a generic leveling plugin adapter. */
+    public static class GenericLevelingSection {
+        private String ClassName = "";
+        private String InstanceMethod = "";
+        private String GrantXPMethod = "addXP";
+
+        public String getClassName() { return ClassName; }
+        public String getInstanceMethod() { return InstanceMethod; }
+        public String getGrantXPMethod() { return GrantXPMethod; }
+
+        public boolean isConfigured() {
+            return ClassName != null && !ClassName.isBlank();
+        }
+    }
+
+    /** Config section for MMOSkillTree-specific settings. */
+    public static class MMOSkillTreeSection {
+        private String DefaultSkillType = "SWORDS";
+
+        public String getDefaultSkillType() { return DefaultSkillType != null ? DefaultSkillType : "SWORDS"; }
     }
 }

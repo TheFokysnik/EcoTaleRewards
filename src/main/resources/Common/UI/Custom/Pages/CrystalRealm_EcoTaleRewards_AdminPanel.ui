@@ -199,46 +199,28 @@ $C.@PageOverlay {
           Label #DayDescLabel { Style: @Gray; FlexWeight: 1; Text: ""; }
         }
 
-        // Coins row
-        Group #EdCoins { LayoutMode: Left; Anchor: (Height: 28); Padding: (Left: 4, Right: 4);
+        // Coins row (TextField)
+        Group #EdCoins { LayoutMode: Left; Anchor: (Height: 32); Padding: (Left: 4, Right: 4);
           Label #EdCoinsLabel { Style: @White; Anchor: (Width: 140); Text: "Coins:"; }
-          Label #EdCoinsValue { Style: @Value; Anchor: (Width: 100); Text: "0"; }
-          Button #CoinsDn50 { Anchor: (Width: 60, Height: 24); Background: (Color: #1a1020); Style: (Hovered: (Background: (Color: #2a1830)), Pressed: (Background: (Color: #3a2840)));
-            Label { Style: (FontSize: 12, TextColor: #ff6666, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "-50"; }
-          }
-          Group { Anchor: (Width: 3); }
-          Button #CoinsUp50 { Anchor: (Width: 60, Height: 24); Background: (Color: #102010); Style: (Hovered: (Background: (Color: #183018)), Pressed: (Background: (Color: #284028)));
-            Label { Style: (FontSize: 12, TextColor: #66ff66, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "+50"; }
-          }
-          Group { Anchor: (Width: 3); }
-          Button #CoinsDn200 { Anchor: (Width: 66, Height: 24); Background: (Color: #1a1020); Style: (Hovered: (Background: (Color: #2a1830)), Pressed: (Background: (Color: #3a2840)));
-            Label { Style: (FontSize: 12, TextColor: #ff6666, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "-200"; }
-          }
-          Group { Anchor: (Width: 3); }
-          Button #CoinsUp200 { Anchor: (Width: 66, Height: 24); Background: (Color: #102010); Style: (Hovered: (Background: (Color: #183018)), Pressed: (Background: (Color: #284028)));
-            Label { Style: (FontSize: 12, TextColor: #66ff66, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "+200"; }
-          }
+          $C.@TextField #EdCoinsInput { Anchor: (Width: 160, Height: 28); PlaceholderText: "0"; }
         }
 
-        // XP row
-        Group #EdXP { LayoutMode: Left; Anchor: (Height: 28); Padding: (Left: 4, Right: 4);
+        // XP row (TextField)
+        Group #EdXP { LayoutMode: Left; Anchor: (Height: 32); Padding: (Left: 4, Right: 4);
           Label #EdXPLabel { Style: @White; Anchor: (Width: 140); Text: "XP:"; }
-          Label #EdXPValue { Style: @Value; Anchor: (Width: 100); Text: "0"; }
-          Button #XPDn25 { Anchor: (Width: 60, Height: 24); Background: (Color: #1a1020); Style: (Hovered: (Background: (Color: #2a1830)), Pressed: (Background: (Color: #3a2840)));
-            Label { Style: (FontSize: 12, TextColor: #ff6666, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "-25"; }
-          }
-          Group { Anchor: (Width: 3); }
-          Button #XPUp25 { Anchor: (Width: 60, Height: 24); Background: (Color: #102010); Style: (Hovered: (Background: (Color: #183018)), Pressed: (Background: (Color: #284028)));
-            Label { Style: (FontSize: 12, TextColor: #66ff66, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "+25"; }
-          }
-          Group { Anchor: (Width: 3); }
-          Button #XPDn100 { Anchor: (Width: 66, Height: 24); Background: (Color: #1a1020); Style: (Hovered: (Background: (Color: #2a1830)), Pressed: (Background: (Color: #3a2840)));
-            Label { Style: (FontSize: 12, TextColor: #ff6666, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "-100"; }
-          }
-          Group { Anchor: (Width: 3); }
-          Button #XPUp100 { Anchor: (Width: 66, Height: 24); Background: (Color: #102010); Style: (Hovered: (Background: (Color: #183018)), Pressed: (Background: (Color: #284028)));
-            Label { Style: (FontSize: 12, TextColor: #66ff66, HorizontalAlignment: Center, VerticalAlignment: Center, RenderBold: true); Text: "+100"; }
-          }
+          $C.@TextField #EdXPInput { Anchor: (Width: 160, Height: 28); PlaceholderText: "0"; }
+        }
+
+        // Description row (TextField)
+        Group #EdDesc { LayoutMode: Left; Anchor: (Height: 32); Padding: (Left: 4, Right: 4);
+          Label #EdDescLabel { Style: @White; Anchor: (Width: 140); Text: "Description:"; }
+          $C.@TextField #EdDescInput { Anchor: (Width: 600, Height: 28); PlaceholderText: "Optional description for this day"; }
+        }
+
+        // Commands row (TextField)
+        Group #EdCommands { LayoutMode: Left; Anchor: (Height: 32); Padding: (Left: 4, Right: 4);
+          Label #EdCommandsLabel { Style: @White; Anchor: (Width: 140); Text: "Commands:"; }
+          $C.@TextField #EdCommandsInput { Anchor: (Width: 600, Height: 28); PlaceholderText: "cmd1; cmd2; cmd3"; }
         }
 
         // Items row (with icons and remove button)

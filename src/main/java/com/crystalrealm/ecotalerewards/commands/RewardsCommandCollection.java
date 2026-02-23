@@ -47,6 +47,10 @@ import java.util.concurrent.CompletableFuture;
  *   <li><b>/rewards reload</b> — admin: reload config</li>
  *   <li><b>/rewards langen</b> — switch language to English</li>
  *   <li><b>/rewards langru</b> — switch language to Russian</li>
+ *   <li><b>/rewards langpt_br</b> — switch language to Portuguese (BR)</li>
+ *   <li><b>/rewards langfr</b> — switch language to French</li>
+ *   <li><b>/rewards langde</b> — switch language to German</li>
+ *   <li><b>/rewards langes</b> — switch language to Spanish</li>
  *   <li><b>/rewards help</b> — show help</li>
  * </ul>
  *
@@ -58,7 +62,9 @@ public class RewardsCommandCollection extends AbstractCommandCollection {
 
     private static final Set<String> COMMAND_KEYWORDS = Set.of(
             "rewards", "calendar", "claim", "info", "admin",
-            "reset", "reload", "langen", "langru", "help"
+            "reset", "reload",
+            "langen", "langru", "langpt_br", "langfr", "langde", "langes",
+            "help"
     );
 
     // ── Dependencies ────────────────────────────────────────
@@ -101,8 +107,12 @@ public class RewardsCommandCollection extends AbstractCommandCollection {
         addSubCommand(new AdminSubCommand());
         addSubCommand(new ResetSubCommand());
         addSubCommand(new ReloadSubCommand());
-        addSubCommand(new LangEnSubCommand());
-        addSubCommand(new LangRuSubCommand());
+        addSubCommand(new LangSwitchSubCommand("langen", "en", "Switch to English"));
+        addSubCommand(new LangSwitchSubCommand("langru", "ru", "Переключить на русский"));
+        addSubCommand(new LangSwitchSubCommand("langpt_br", "pt_br", "Mudar para Português"));
+        addSubCommand(new LangSwitchSubCommand("langfr", "fr", "Passer au Français"));
+        addSubCommand(new LangSwitchSubCommand("langde", "de", "Zu Deutsch wechseln"));
+        addSubCommand(new LangSwitchSubCommand("langes", "es", "Cambiar a Español"));
         addSubCommand(new HelpSubCommand());
     }
 
@@ -351,29 +361,20 @@ public class RewardsCommandCollection extends AbstractCommandCollection {
     //  /rewards langen & /rewards langru
     // ═════════════════════════════════════════════════════════
 
-    private class LangEnSubCommand extends AbstractAsyncCommand {
-        LangEnSubCommand() { super("langen", "Switch to English"); }
+    private class LangSwitchSubCommand extends AbstractAsyncCommand {
+        private final String langCode;
 
-        @Override
-        public CompletableFuture<Void> executeAsync(CommandContext context) {
-            if (!context.isPlayer()) return done();
-            CommandSender sender = context.sender();
-            if (!checkPerm(sender, context, "ecotalerewards.use")) return done();
-            langManager.setPlayerLang(sender.getUuid(), "en");
-            context.sendMessage(msg(L(sender, "cmd.lang.switched")));
-            return done();
+        LangSwitchSubCommand(String name, String langCode, String description) {
+            super(name, description);
+            this.langCode = langCode;
         }
-    }
-
-    private class LangRuSubCommand extends AbstractAsyncCommand {
-        LangRuSubCommand() { super("langru", "Переключить на русский"); }
 
         @Override
         public CompletableFuture<Void> executeAsync(CommandContext context) {
             if (!context.isPlayer()) return done();
             CommandSender sender = context.sender();
             if (!checkPerm(sender, context, "ecotalerewards.use")) return done();
-            langManager.setPlayerLang(sender.getUuid(), "ru");
+            langManager.setPlayerLang(sender.getUuid(), langCode);
             context.sendMessage(msg(L(sender, "cmd.lang.switched")));
             return done();
         }
@@ -511,6 +512,24 @@ public class RewardsCommandCollection extends AbstractCommandCollection {
     // ═════════════════════════════════════════════════════════
     //  HELPERS
     // ═════════════════════════════════════════════════════════
+
+    /**
+     * Opens the calendar GUI for the given sender.
+     * Exposed as public so standalone {@code /calendar} command can delegate here.
+     */
+    public void openCalendarForSender(CommandContext context, CommandSender sender) {
+        if (!checkPerm(sender, context, "ecotalerewards.use")) return;
+        openGuiForSender(context, sender, false);
+    }
+
+    /**
+     * Opens the admin GUI for the given sender.
+     * Exposed as public so standalone {@code /calendar admin} command can delegate here.
+     */
+    public void openAdminForSender(CommandContext context, CommandSender sender) {
+        if (!checkPerm(sender, context, "ecotalerewards.admin")) return;
+        openGuiForSender(context, sender, true);
+    }
 
     /**
      * Parses trailing argument from {@code getInputString()},

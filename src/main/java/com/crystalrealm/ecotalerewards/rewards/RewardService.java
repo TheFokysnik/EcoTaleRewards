@@ -5,6 +5,8 @@ import com.crystalrealm.ecotalerewards.model.PlayerRewardData;
 import com.crystalrealm.ecotalerewards.model.ReturnRewardTier;
 import com.crystalrealm.ecotalerewards.model.RewardDay;
 import com.crystalrealm.ecotalerewards.model.StreakMilestone;
+import com.crystalrealm.ecotalerewards.provider.economy.EconomyBridge;
+import com.crystalrealm.ecotalerewards.provider.leveling.LevelBridge;
 import com.crystalrealm.ecotalerewards.util.PluginLogger;
 import com.crystalrealm.ecotalerewards.util.PermissionHelper;
 
@@ -31,7 +33,7 @@ import java.util.UUID;
 
 /**
  * Central reward distribution service.
- * Handles coin deposits via EcotaleAPI (reflection), XP via RPG Leveling,
+ * Handles coin deposits via EconomyBridge, XP via LevelBridge,
  * item drops via give command, and command execution via CommandManager.
  */
 public class RewardService {
@@ -40,6 +42,8 @@ public class RewardService {
 
     private final RewardsConfig config;
     private final JavaPlugin plugin;
+    private EconomyBridge economyBridge;
+    private LevelBridge levelBridge;
 
     // Cached command infrastructure (lazy-init, pure reflection)
     private Object commandManagerObj;
@@ -227,51 +231,41 @@ public class RewardService {
         return PermissionHelper.getInstance().hasPermission(sender.getUuid(), perm);
     }
 
+    /** Injects the economy bridge after provider activation. */
+    public void setEconomyBridge(@Nonnull EconomyBridge economyBridge) {
+        this.economyBridge = economyBridge;
+    }
+
+    /** Injects the level bridge after provider activation. */
+    public void setLevelBridge(@Nonnull LevelBridge levelBridge) {
+        this.levelBridge = levelBridge;
+    }
+
     // ═════════════════════════════════════════════════════════
-    //  ECONOMY (EcotaleAPI via reflection)
+    //  ECONOMY (via EconomyBridge)
     // ═════════════════════════════════════════════════════════
 
     private boolean depositCoins(@Nonnull UUID playerUuid, @Nonnull BigDecimal amount, @Nonnull String reason) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) return true;
-
-        try {
-            Class<?> apiClass = Class.forName("com.ecotale.api.EcotaleAPI");
-            Method deposit = apiClass.getMethod("deposit", UUID.class, double.class, String.class);
-            boolean result = (boolean) deposit.invoke(null, playerUuid, amount.doubleValue(), reason);
-            if (!result) {
-                LOGGER.warn("Deposit failed for {}: {} ({})", playerUuid, amount, reason);
-            }
-            return result;
-        } catch (ClassNotFoundException e) {
-            LOGGER.warn("EcotaleAPI not available — coin reward skipped.");
-            return false;
-        } catch (Exception e) {
-            LOGGER.error("Failed to deposit {} to {}: {}", amount, playerUuid, e.getMessage());
+        if (economyBridge == null || !economyBridge.isAvailable()) {
+            LOGGER.warn("Economy provider not available — coin reward skipped.");
             return false;
         }
+        boolean result = economyBridge.deposit(playerUuid, amount.doubleValue(), reason);
+        if (!result) {
+            LOGGER.warn("Deposit failed for {}: {} ({})", playerUuid, amount, reason);
+        }
+        return result;
     }
 
     private boolean grantXP(@Nonnull UUID playerUuid, int xp) {
         if (xp <= 0) return true;
-
-        try {
-            Class<?> apiClass = Class.forName("org.zuxaw.plugin.api.RPGLevelingAPI");
-            Method getApi = apiClass.getMethod("get");
-            Object api = getApi.invoke(null);
-            if (api != null) {
-                Method addXP = api.getClass().getMethod("addXP", UUID.class, double.class);
-                addXP.invoke(api, playerUuid, (double) xp);
-                LOGGER.info("[XP] Granted {} XP to {}", xp, playerUuid);
-                return true;
-            } else {
-                LOGGER.warn("RPGLevelingAPI.get() returned null — XP not granted");
-            }
-        } catch (ClassNotFoundException ignored) {
-            // RPG Leveling not available — XP reward skipped
-        } catch (Exception e) {
-            LOGGER.warn("XP grant failed for {}: {}", playerUuid, e.getMessage(), e);
+        if (levelBridge == null || !levelBridge.isAvailable()) return false;
+        boolean success = levelBridge.grantXP(playerUuid, (double) xp, "DailyReward");
+        if (success) {
+            LOGGER.info("[XP] Granted {} XP to {}", xp, playerUuid);
         }
-        return false;
+        return success;
     }
 
     private void executeCommands(@Nonnull UUID playerUuid, @Nonnull List<String> commands) {
@@ -363,16 +357,27 @@ public class RewardService {
 
     /**
      * Resolve player name from UUID using the Player entity.
+     * Tries PlayerRef.getUsername() first, then Player.getDisplayName(), fallback to UUID.
      */
     @Nonnull
     private String resolvePlayerName(@Nonnull UUID playerUuid) {
         Player player = getPlayerEntity();
         if (player != null) {
+            // Try PlayerRef.getUsername() for the raw username
             try {
-                Method getUsername = player.getClass().getMethod("getUsername");
-                Object name = getUsername.invoke(player);
-                if (name instanceof String s && !s.isEmpty()) {
-                    return s;
+                com.hypixel.hytale.server.core.universe.PlayerRef ref = player.getPlayerRef();
+                if (ref != null) {
+                    String username = ref.getUsername();
+                    if (username != null && !username.isEmpty()) {
+                        return username;
+                    }
+                }
+            } catch (Exception ignored) {}
+            // Fallback to Player.getDisplayName()
+            try {
+                String displayName = player.getDisplayName();
+                if (displayName != null && !displayName.isEmpty()) {
+                    return displayName;
                 }
             } catch (Exception ignored) {}
         }

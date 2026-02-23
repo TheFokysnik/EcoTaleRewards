@@ -3,7 +3,25 @@
     "DebugMode": false,
     "Language": "en",
     "MessagePrefix": "<dark_gray>[<gold>EcoTale<dark_gray>]",
-    "AutoSaveIntervalMinutes": 5
+    "AutoSaveIntervalMinutes": 5,
+    "_EconomyProviderOptions": "ecotale | economyapi | generic",
+    "EconomyProvider": "ecotale",
+    "_LevelProviderOptions": "rpgleveling | endlessleveling | mmoskilltree | generic",
+    "LevelProvider": "rpgleveling"
+  },
+  "GenericEconomy": {
+    "ClassName": "",
+    "InstanceMethod": "",
+    "DepositMethod": "deposit",
+    "DepositHasReason": false
+  },
+  "GenericLeveling": {
+    "ClassName": "",
+    "InstanceMethod": "",
+    "GrantXPMethod": "addXP"
+  },
+  "MMOSkillTree": {
+    "DefaultSkillType": "SWORDS"
   },
   "Calendar": {
     "TotalDays": 30,

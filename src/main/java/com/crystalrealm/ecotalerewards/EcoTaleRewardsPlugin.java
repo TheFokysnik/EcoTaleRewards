@@ -10,6 +10,11 @@ import com.crystalrealm.ecotalerewards.model.PlayerRewardData;
 import com.crystalrealm.ecotalerewards.model.ReturnRewardTier;
 import com.crystalrealm.ecotalerewards.model.StreakMilestone;
 import com.crystalrealm.ecotalerewards.protection.AntiAbuseGuard;
+import com.crystalrealm.ecotalerewards.provider.economy.EconomyBridge;
+import com.crystalrealm.ecotalerewards.provider.economy.GenericEconomyProvider;
+import com.crystalrealm.ecotalerewards.provider.leveling.GenericLevelProvider;
+import com.crystalrealm.ecotalerewards.provider.leveling.LevelBridge;
+import com.crystalrealm.ecotalerewards.provider.leveling.MMOSkillTreeProvider;
 import com.crystalrealm.ecotalerewards.returns.ReturnRewardService;
 import com.crystalrealm.ecotalerewards.rewards.RewardService;
 import com.crystalrealm.ecotalerewards.storage.JsonRewardStorage;
@@ -50,12 +55,12 @@ import java.util.concurrent.TimeUnit;
  *   <li>JSON storage, full RU/EN localization</li>
  * </ul>
  *
- * @version 1.1.3
+ * @version 1.2.0
  */
 public class EcoTaleRewardsPlugin extends JavaPlugin {
 
     private static final PluginLogger LOGGER = PluginLogger.forEnclosingClass();
-    private static final String VERSION = "1.1.3";
+    private static final String VERSION = "1.2.0";
 
     // ── Services ────────────────────────────────────────────
     private ConfigManager      configManager;
@@ -66,6 +71,7 @@ public class EcoTaleRewardsPlugin extends JavaPlugin {
     private ReturnRewardService returnService;
     private RewardService      rewardService;
     private AntiAbuseGuard     antiAbuse;
+    private LevelBridge         levelBridge;
 
     // ── Scheduled tasks ─────────────────────────────────────
     private ScheduledFuture<?> autoSaveTask;
@@ -116,11 +122,13 @@ public class EcoTaleRewardsPlugin extends JavaPlugin {
         antiAbuse = new AntiAbuseGuard(config);
 
         // 9. Commands
-        getCommandRegistry().registerCommand(new RewardsCommandCollection(
+        RewardsCommandCollection rewardsCmd = new RewardsCommandCollection(
                 configManager, langManager, calendarService, streakService,
                 returnService, rewardService, antiAbuse, storage, VERSION
-        ));
-        LOGGER.info("Registered /rewards command.");
+        );
+        getCommandRegistry().registerCommand(rewardsCmd);
+        getCommandRegistry().registerCommand(new com.crystalrealm.ecotalerewards.commands.CalendarCommand(rewardsCmd));
+        LOGGER.info("Registered /rewards and /calendar commands.");
 
         // 10. Player join event listener
         registerPlayerJoinHandler();
@@ -129,6 +137,38 @@ public class EcoTaleRewardsPlugin extends JavaPlugin {
     @Override
     protected void start() {
         LOGGER.info("EcoTaleRewards starting...");
+
+        RewardsConfig config = configManager.getConfig();
+
+        // ── Economy Bridge ──
+        EconomyBridge economyBridge = new EconomyBridge();
+        var geCfg = config.getGenericEconomy();
+        if (geCfg.isConfigured()) {
+            economyBridge.registerProvider("generic", new GenericEconomyProvider(
+                    geCfg.getClassName(), geCfg.getInstanceMethod(),
+                    geCfg.getDepositMethod(), geCfg.isDepositHasReason()));
+        }
+        economyBridge.activate(config.getGeneral().getEconomyProvider());
+        LOGGER.info("Economy provider: {}", economyBridge.getProviderName());
+
+        // ── Level Bridge ──
+        levelBridge = new LevelBridge();
+        var mmoCfg = config.getMMOSkillTree();
+        if (mmoCfg != null) {
+            levelBridge.registerProvider("mmoskilltree", new MMOSkillTreeProvider(
+                    mmoCfg.getDefaultSkillType()));
+        }
+        var glCfg = config.getGenericLeveling();
+        if (glCfg.isConfigured()) {
+            levelBridge.registerProvider("generic", new GenericLevelProvider(
+                    glCfg.getClassName(), glCfg.getInstanceMethod(), glCfg.getGrantXPMethod()));
+        }
+        levelBridge.activate(config.getGeneral().getLevelProvider());
+        LOGGER.info("Level provider: {}", levelBridge.getProviderName());
+
+        // ── Inject bridges into RewardService ──
+        rewardService.setEconomyBridge(economyBridge);
+        rewardService.setLevelBridge(levelBridge);
 
         // Schedule auto-save
         int saveInterval = configManager.getConfig().getGeneral().getAutoSaveIntervalMinutes();
@@ -214,6 +254,17 @@ public class EcoTaleRewardsPlugin extends JavaPlugin {
             if (player == null) return;
             UUID playerUuid = player.getUuid();
             LOGGER.debug("[PlayerReady] Processing login for {}", playerUuid);
+
+            // Cache ECS context for MMOSkillTree and similar providers
+            if (levelBridge != null) {
+                try {
+                    Ref<EntityStore> ref = player.getReference();
+                    if (ref != null) {
+                        Store<EntityStore> store = ref.getStore();
+                        if (store != null) levelBridge.onPlayerJoin(playerUuid, store, ref);
+                    }
+                } catch (Exception ignored) {}
+            }
 
             // Process login directly — player is already ready, no delay needed
             processPlayerLogin(playerUuid);

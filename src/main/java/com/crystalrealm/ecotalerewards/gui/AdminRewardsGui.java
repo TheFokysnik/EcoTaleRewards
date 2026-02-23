@@ -88,13 +88,21 @@ public final class AdminRewardsGui extends InteractiveCustomUIPage<AdminRewardsG
     );
 
     // ── Event data keys ─────────────────────────────────────
-    private static final String KEY_ACTION = "Action";
-    private static final String KEY_SLOT   = "Slot";
+    private static final String KEY_ACTION      = "Action";
+    private static final String KEY_SLOT        = "Slot";
+    private static final String KEY_ED_COINS    = "@EdCoins";
+    private static final String KEY_ED_XP       = "@EdXP";
+    private static final String KEY_ED_DESC     = "@EdDesc";
+    private static final String KEY_ED_COMMANDS = "@EdCommands";
 
     static final BuilderCodec<AdminEventData> CODEC = ReflectiveCodecBuilder
             .<AdminEventData>create(AdminEventData.class, AdminEventData::new)
-            .addStringField(KEY_ACTION, (d, v) -> d.action = v, d -> d.action)
-            .addStringField(KEY_SLOT,   (d, v) -> d.slot = v,   d -> d.slot)
+            .addStringField(KEY_ACTION,      (d, v) -> d.action = v,      d -> d.action)
+            .addStringField(KEY_SLOT,        (d, v) -> d.slot = v,        d -> d.slot)
+            .addStringField(KEY_ED_COINS,    (d, v) -> d.edCoins = v,     d -> d.edCoins)
+            .addStringField(KEY_ED_XP,       (d, v) -> d.edXp = v,        d -> d.edXp)
+            .addStringField(KEY_ED_DESC,     (d, v) -> d.edDesc = v,      d -> d.edDesc)
+            .addStringField(KEY_ED_COMMANDS, (d, v) -> d.edCommands = v,  d -> d.edCommands)
             .build();
 
     // ── Dependencies ────────────────────────────────────────
@@ -200,25 +208,7 @@ public final class AdminRewardsGui extends InteractiveCustomUIPage<AdminRewardsG
         events.addEventBinding(CustomUIEventBindingType.Activating, "#DayNext",
                 new EventData().append(KEY_ACTION, "day_next"));
 
-        // Coins +/-
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#CoinsDn50",
-                new EventData().append(KEY_ACTION, "coins_adj").append(KEY_SLOT, "-50"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#CoinsUp50",
-                new EventData().append(KEY_ACTION, "coins_adj").append(KEY_SLOT, "50"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#CoinsDn200",
-                new EventData().append(KEY_ACTION, "coins_adj").append(KEY_SLOT, "-200"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#CoinsUp200",
-                new EventData().append(KEY_ACTION, "coins_adj").append(KEY_SLOT, "200"));
-
-        // XP +/-
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#XPDn25",
-                new EventData().append(KEY_ACTION, "xp_adj").append(KEY_SLOT, "-25"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#XPUp25",
-                new EventData().append(KEY_ACTION, "xp_adj").append(KEY_SLOT, "25"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#XPDn100",
-                new EventData().append(KEY_ACTION, "xp_adj").append(KEY_SLOT, "-100"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#XPUp100",
-                new EventData().append(KEY_ACTION, "xp_adj").append(KEY_SLOT, "100"));
+        // (Coins and XP are now TextFields — read on save_day)
 
         // Item management: picker grid + remove + pagination
         for (int ip = 0; ip < ITEMS_PER_PAGE; ip++) {
@@ -232,9 +222,14 @@ public final class AdminRewardsGui extends InteractiveCustomUIPage<AdminRewardsG
         events.addEventBinding(CustomUIEventBindingType.Activating, "#PickerNext",
                 new EventData().append(KEY_ACTION, "picker_next"));
 
-        // Save day
+        // Save day (reads TextField values at event time)
         events.addEventBinding(CustomUIEventBindingType.Activating, "#SaveDay",
-                new EventData().append(KEY_ACTION, "save_day"));
+                new EventData().append(KEY_ACTION, "save_day")
+                        .append(KEY_ED_COINS, "#EdCoinsInput.Value")
+                        .append(KEY_ED_XP, "#EdXPInput.Value")
+                        .append(KEY_ED_DESC, "#EdDescInput.Value")
+                        .append(KEY_ED_COMMANDS, "#EdCommandsInput.Value"),
+                false);
 
         // ── Banners ─────────────────────────────────────────
         if (errorMessage != null && !errorMessage.isEmpty()) {
@@ -321,15 +316,9 @@ public final class AdminRewardsGui extends InteractiveCustomUIPage<AdminRewardsG
                 refreshPage(null, null);
             }
 
-            case "coins_adj" -> {
-                int delta = parseSlot(data.slot);
-                adjustDayCoins(delta);
-                refreshPage(null, null);
-            }
-
-            case "xp_adj" -> {
-                int delta = parseSlot(data.slot);
-                adjustDayXP(delta);
+            case "coins_adj", "xp_adj" -> {
+                // Legacy: these were handled by +/- buttons, now using TextFields.
+                // Keep as no-op for backward compat.
                 refreshPage(null, null);
             }
 
@@ -374,6 +363,48 @@ public final class AdminRewardsGui extends InteractiveCustomUIPage<AdminRewardsG
             }
 
             case "save_day" -> {
+                RewardsConfig.DayRewardEntry entry = getOrCreateDayEntry(editingDay);
+
+                // Parse Coins from TextField
+                if (data.edCoins != null && !data.edCoins.isEmpty()) {
+                    try {
+                        double coins = Double.parseDouble(data.edCoins.trim());
+                        entry.setCoins(Math.max(0, coins));
+                    } catch (NumberFormatException e) {
+                        LOGGER.warn("[save_day] Invalid coins value: {}", data.edCoins);
+                    }
+                }
+
+                // Parse XP from TextField
+                if (data.edXp != null && !data.edXp.isEmpty()) {
+                    try {
+                        int xp = Integer.parseInt(data.edXp.trim());
+                        entry.setXP(Math.max(0, xp));
+                    } catch (NumberFormatException e) {
+                        LOGGER.warn("[save_day] Invalid XP value: {}", data.edXp);
+                    }
+                }
+
+                // Description from TextField
+                if (data.edDesc != null) {
+                    entry.setDescription(data.edDesc.trim());
+                }
+
+                // Commands from TextField (semicolon-separated)
+                if (data.edCommands != null) {
+                    String cmdText = data.edCommands.trim();
+                    if (cmdText.isEmpty()) {
+                        entry.setCommands(new ArrayList<>());
+                    } else {
+                        List<String> cmds = new ArrayList<>();
+                        for (String c : cmdText.split(";")) {
+                            String trimmed = c.trim();
+                            if (!trimmed.isEmpty()) cmds.add(trimmed);
+                        }
+                        entry.setCommands(cmds);
+                    }
+                }
+
                 saveConfig();
                 refreshPage(null, L("gui.admin.day_saved", "day", String.valueOf(editingDay)));
             }
@@ -429,8 +460,11 @@ public final class AdminRewardsGui extends InteractiveCustomUIPage<AdminRewardsG
     private void handleToggle(int slot, RewardsConfig config) {
         switch (slot) {
             case 1 -> config.getGeneral().setDebugMode(!config.getGeneral().isDebugMode());
-            case 2 -> config.getGeneral().setLanguage(
-                    "en".equalsIgnoreCase(config.getGeneral().getLanguage()) ? "ru" : "en");
+            case 2 -> {
+                java.util.List<String> langs = java.util.List.of("en", "ru", "pt_br", "fr", "de", "es");
+                int idx = langs.indexOf(config.getGeneral().getLanguage());
+                config.getGeneral().setLanguage(langs.get((idx + 1) % langs.size()));
+            }
             case 3 -> config.getCalendar().setStrictMode(!config.getCalendar().isStrictMode());
         }
     }
@@ -555,13 +589,23 @@ public final class AdminRewardsGui extends InteractiveCustomUIPage<AdminRewardsG
         cmd.set("#DayNumLabel.Text", L("gui.admin.day_num", "day", String.valueOf(editingDay)));
         cmd.set("#DayDescLabel.Text", entry.getDescription());
 
-        // Coins
+        // Coins (TextField)
         cmd.set("#EdCoinsLabel.Text", L("gui.admin.ed_coins"));
-        cmd.set("#EdCoinsValue.Text", String.format("%.0f", entry.getCoins()));
+        cmd.set("#EdCoinsInput.Value", String.format("%.0f", entry.getCoins()));
 
-        // XP
+        // XP (TextField)
         cmd.set("#EdXPLabel.Text", L("gui.admin.ed_xp"));
-        cmd.set("#EdXPValue.Text", String.valueOf(entry.getXP()));
+        cmd.set("#EdXPInput.Value", String.valueOf(entry.getXP()));
+
+        // Description (TextField)
+        cmd.set("#EdDescLabel.Text", L("gui.admin.ed_description"));
+        cmd.set("#EdDescInput.Value", entry.getDescription() != null ? entry.getDescription() : "");
+
+        // Commands (TextField, semicolon-separated)
+        cmd.set("#EdCommandsLabel.Text", L("gui.admin.ed_commands"));
+        String cmdStr = (entry.getCommands() != null && !entry.getCommands().isEmpty())
+                ? String.join("; ", entry.getCommands()) : "";
+        cmd.set("#EdCommandsInput.Value", cmdStr);
 
         // Items label + icons for current day items
         cmd.set("#EdItemsLabel.Text", L("gui.admin.ed_items"));
@@ -757,5 +801,9 @@ public final class AdminRewardsGui extends InteractiveCustomUIPage<AdminRewardsG
     public static class AdminEventData {
         public String action = "";
         public String slot = "";
+        public String edCoins = "";
+        public String edXp = "";
+        public String edDesc = "";
+        public String edCommands = "";
     }
 }
